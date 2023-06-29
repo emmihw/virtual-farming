@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Unkrautbekämpfung AR-Spiel</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+  </head>
+  <body>
+    <a-scene embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
+      <!-- Hinzufügen des Kamera-Markers -->
+      <a-marker preset="hiro">
+        <!-- Spielbrett -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="2" height="2" color="#7BC8A4"></a-plane>
+        <!-- Unkraut -->
+        <a-plane class="weed" position="-0.5 0 -0.5" rotation="-90 0 0" width="0.5" height="0.5" color="#FF0000"></a-plane>
+        <a-plane class="weed" position="0.5 0 -0.5" rotation="-90 0 0" width="0.5" height="0.5" color="#FF0000"></a-plane>
+        <a-plane class="weed" position="-0.5 0 0.5" rotation="-90 0 0" width="0.5" height="0.5" color="#FF0000"></a-plane>
+        <a-plane class="weed" position="0.5 0 0.5" rotation="-90 0 0" width="0.5" height="0.5" color="#FF0000"></a-plane>
+      </a-marker>
+
+      <!-- Kamera -->
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      // Anzahl der Unkrautplättchen
+      var weedCount = 4;
+      // Zähler für entfernte Unkräuter
+      var removedWeeds = 0;
+      // Spielstatus
+      var gameStarted = false;
+
+      // Event Listener für Swipe-Bewegungen
+      document.addEventListener("touchstart", handleSwipeStart, false);
+      document.addEventListener("touchend", handleSwipeEnd, false);
+
+      // Funktion für Swipe-Start-Ereignis
+      function handleSwipeStart(event) {
+        if (!gameStarted) {
+          gameStarted = true;
+        }
+      }
+
+      // Funktion für Swipe-Ende-Ereignis
+      function handleSwipeEnd(event) {
+        if (gameStarted) {
+          var touch = event.changedTouches[0];
+          var swipeDirection = getSwipeDirection(touch);
+
+          // Prüfen, ob das berührte Element ein Unkrautplättchen ist
+          var intersectedWeed = getIntersectedWeed(touch);
+
+          // Wenn ein Unkrautplättchen berührt wurde und der Swipe in vertikaler Richtung erfolgt
+          if (intersectedWeed && swipeDirection === "up") {
+            removeWeed(intersectedWeed);
+          }
+
+          // Prüfen, ob alle Unkräuter entfernt wurden
+          if (removedWeeds === weedCount) {
+            endGame(true); // Gewonnen
+          }
+        }
+      }
+
+      // Funktion zum Ermitteln der Swipe-Richtung
+      function getSwipeDirection(touch) {
+        var x1 = touch.clientX || touch.pageX;
+        var x2 = touch.clientX || touch.pageX;
+        var y1 = touch.clientY || touch.pageY;
+        var y2 = touch.clientY || touch.pageY;
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+        var angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+        var direction;
+
+        if (angle >= -45 && angle < 45) {
+          direction = "left";
+        } else if (angle >= 45 && angle < 135) {
+          direction = "up";
+        } else if (angle >= -135 && angle < -45) {
+          direction = "down";
+        } else {
+          direction = "right";
+        }
+
+        return direction;
+      }
+
+      // Funktion zum Überprüfen, ob das berührte Element ein Unkrautplättchen ist
+      function getIntersectedWeed(touch) {
+        var intersectedElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (intersectedElement.classList.contains("weed")) {
+          return intersectedElement;
+        }
+        return null;
+      }
+
+      // Funktion zum Entfernen des Unkrauts
+      function removeWeed(weed) {
+        weed.parentNode.removeChild(weed);
+        removedWeeds++;
+      }
+
+      // Funktion zum Beenden des Spiels
+      function endGame(won) {
+        gameStarted = false;
+        var result = won ? "Win" : "Loose";
+        alert("Spiel beendet! Du hast " + result + "!");
+      }
+    </script>
+  </body>
+</html>
