@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'quelle'">
+
   <title>Unkrautbekämpfung</title>
+  
   <style>
     #game-board {
       position: relative;
@@ -63,7 +65,7 @@
   <div id="start-overlay">
     <div>
       <h1>Unkrautbekämpfung</h1>
-      <p>Entfernen Sie das Unkraut vom Spielbrett, indem Sie nach oben wischen. Sobald das gesamte Unkraut entfernt ist, wird die Zeit angezeigt.</p>
+      <p>Entfernen Sie das Unkraut vom Spielbrett, indem Sie nach oben wischen. Sobald das gesamte Unkraut entfernt ist, wird die Zeit gestoppt.</p>
       <button id="start-button">Start</button>
     </div>
   </div>
